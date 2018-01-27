@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package visma.pdfutil;
+
+service PDFUtil {
+    rpc render (RenderRequest) returns (stream RenderResponse) {}
+}
+
+enum ImageType {
+    ARGB = 0;
+    BINARY = 1;
+    GRAY = 2;
+    RGB = 3;
+}
+
+enum ImageFormat {
+    PNG = 0;
+    PPM = 1;
+}
+
+message RenderRequest {
+    bytes pdfData = 1;
+    repeated int32 targetPages = 2;
+    // If the resulting image exceeds 4000x4000 with the
+    // requested DPI, A lower DPI will be choosen by thn engine.
+    // The caller can read it from the response.
+    int32 DPI = 3;
+    ImageType imageType = 4;
+    ImageFormat imageFormat = 5;
+    bool extractText = 6;
+}
+
+message RenderResponse {
+    int32 pageIndex = 1;
+    string pageText = 2;
+    bytes imageData = 3;
+    int32 imageHeight = 4;
+    int32 imageWidth = 5;
+    int32 imageDPI = 6;
+    ImageFormat imageFormat = 7;
+    int32 imageSize = 8;
+}
